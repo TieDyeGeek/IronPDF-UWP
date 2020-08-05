@@ -1,19 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
+using IronPdf;
 
 namespace IronPdfUwp
 {
@@ -24,7 +14,39 @@ namespace IronPdfUwp
     {
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
+        }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+            //Generate PDF
+
+            var renderer = new HtmlToPdf
+            {
+                PrintOptions = new PdfPrintOptions
+                {
+                    PaperSize = PdfPrintOptions.PdfPaperSize.Letter,
+                    PaperOrientation = PdfPrintOptions.PdfPaperOrientation.Portrait,
+                    RenderDelay = 1000,
+                    Footer = new SimpleHeaderFooter
+                    {
+                        RightText = "Page {page} of {total-pages}",
+                        FontSize = 8
+                    }
+                }
+            };
+
+            var pdf = await renderer.RenderUrlAsPdfAsync(new Uri("https://ironpdf.com/"));
+
+
+            //Save PDF to file in Downloads/IronPdfUwp/
+            var newFile = await DownloadsFolder.CreateFileAsync("UWP-test.pdf", CreationCollisionOption.GenerateUniqueName);
+
+            var fileStream = await newFile.OpenStreamForWriteAsync();
+            if (fileStream.CanWrite)
+                await fileStream.WriteAsync(pdf.BinaryData, 0, pdf.BinaryData.Length);
+
+            fileStream.Close();
         }
     }
 }

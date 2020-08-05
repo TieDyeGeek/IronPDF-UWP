@@ -9,5 +9,6 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        <Button Content="Click here to save PDF to Downloads folder" VerticalAlignment="Center" HorizontalAlignment="Center" Click="Button_Click"/>
     </Grid>
 </Page>
